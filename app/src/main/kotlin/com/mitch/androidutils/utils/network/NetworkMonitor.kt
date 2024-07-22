@@ -1,5 +1,4 @@
 package com.mitch.androidutils.utils.network
-package com.mitch.template.util.network
 
 import android.content.Context
 import android.net.ConnectivityManager
