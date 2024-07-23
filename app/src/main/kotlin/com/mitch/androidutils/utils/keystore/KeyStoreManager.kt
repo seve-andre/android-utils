@@ -19,12 +19,12 @@ class KeyStoreManager(private val keyStoreAlias: String) {
     }
 
     private val encryptCipher
-        get() = Cipher.getInstance(TRANSFORMATION).apply {
+        get() = Cipher.getInstance(Transformation).apply {
             init(Cipher.ENCRYPT_MODE, getKey())
         }
 
     private fun getDecryptCipherForIv(iv: ByteArray): Cipher {
-        return Cipher.getInstance(TRANSFORMATION).apply {
+        return Cipher.getInstance(Transformation).apply {
             init(Cipher.DECRYPT_MODE, getKey(), IvParameterSpec(iv))
         }
     }
@@ -35,15 +35,15 @@ class KeyStoreManager(private val keyStoreAlias: String) {
     }
 
     private fun createKey(): SecretKey {
-        return KeyGenerator.getInstance(ALGORITHM).apply {
+        return KeyGenerator.getInstance(Algorithm).apply {
             init(
                 KeyGenParameterSpec.Builder(
                     keyStoreAlias,
                     KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT
                 )
-                    .setKeySize(KEY_SIZE * 8) // key size in bits
-                    .setBlockModes(BLOCK_MODE)
-                    .setEncryptionPaddings(PADDING)
+                    .setKeySize(KeySize * 8) // key size in bits
+                    .setBlockModes(BlockMode)
+                    .setEncryptionPaddings(Padding)
                     .setUserAuthenticationRequired(false)
                     .setRandomizedEncryptionRequired(true)
                     .build()
@@ -58,8 +58,8 @@ class KeyStoreManager(private val keyStoreAlias: String) {
             it.write(iv)
             // write the payload in chunks to make sure to support larger data amounts (this would otherwise fail silently and result in corrupted data being read back)
             val inputStream = ByteArrayInputStream(bytes)
-            val buffer = ByteArray(CHUNK_SIZE)
-            while (inputStream.available() > CHUNK_SIZE) {
+            val buffer = ByteArray(ChunkSize)
+            while (inputStream.available() > ChunkSize) {
                 inputStream.read(buffer)
                 val ciphertextChunk = cipher.update(buffer)
                 it.write(ciphertextChunk)
@@ -73,14 +73,14 @@ class KeyStoreManager(private val keyStoreAlias: String) {
 
     fun decrypt(inputStream: InputStream): ByteArray {
         return inputStream.use {
-            val iv = ByteArray(KEY_SIZE)
+            val iv = ByteArray(KeySize)
             it.read(iv)
             val cipher = getDecryptCipherForIv(iv)
             val outputStream = ByteArrayOutputStream()
 
             // read the payload in chunks to make sure to support larger data amounts (this would otherwise fail silently and result in corrupted data being read back)
-            val buffer = ByteArray(CHUNK_SIZE)
-            while (inputStream.available() > CHUNK_SIZE) {
+            val buffer = ByteArray(ChunkSize)
+            while (inputStream.available() > ChunkSize) {
                 inputStream.read(buffer)
                 val ciphertextChunk = cipher.update(buffer)
                 outputStream.write(ciphertextChunk)
@@ -95,11 +95,11 @@ class KeyStoreManager(private val keyStoreAlias: String) {
     }
 
     companion object {
-        private const val CHUNK_SIZE = 1024 * 4 // bytes
-        private const val KEY_SIZE = 16 // bytes
-        private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_CBC
-        private const val PADDING = KeyProperties.ENCRYPTION_PADDING_PKCS7
-        private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING"
+        private const val ChunkSize = 1024 * 4 // bytes
+        private const val KeySize = 16 // bytes
+        private const val Algorithm = KeyProperties.KEY_ALGORITHM_AES
+        private const val BlockMode = KeyProperties.BLOCK_MODE_CBC
+        private const val Padding = KeyProperties.ENCRYPTION_PADDING_PKCS7
+        private const val Transformation = "$Algorithm/$BlockMode/$Padding"
     }
 }
