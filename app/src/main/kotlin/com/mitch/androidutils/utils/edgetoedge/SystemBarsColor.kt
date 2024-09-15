@@ -1,67 +1,48 @@
 package com.mitch.androidutils.utils.edgetoedge
 
-import android.graphics.Color
-import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
+import com.mitch.androidutils.utils.activity.findActivity
 
 @Composable
 fun SetSystemBarsColor(color: SystemBarsColor) {
     val view = LocalView.current
+    val activity = view.context.findActivity()
+    val window = activity?.window ?: return
+    val insetsController = WindowInsetsControllerCompat(window, view)
+    val wereStatusBarIconsDark = insetsController.isAppearanceLightStatusBars
+    val wereNavigationBarIconsDark = insetsController.isAppearanceLightStatusBars
     if (!view.isInEditMode) {
-        SideEffect {
-            val activity = view.context as? ComponentActivity
-            activity?.let {
-                when (color) {
-                    is SystemBarsColor.Both -> {
-                        it.enableEdgeToEdge(
-                            statusBarStyle = if (color.statusDarkIcons) {
-                                SystemBarStyle.light(
-                                    scrim = Color.TRANSPARENT,
-                                    darkScrim = Color.TRANSPARENT
-                                )
-                            } else {
-                                SystemBarStyle.dark(scrim = Color.TRANSPARENT)
-                            },
-                            navigationBarStyle = if (color.navigationDarkIcons) {
-                                SystemBarStyle.light(
-                                    scrim = Color.TRANSPARENT,
-                                    darkScrim = Color.TRANSPARENT
-                                )
-                            } else {
-                                SystemBarStyle.dark(scrim = Color.TRANSPARENT)
-                            }
-                        )
-                    }
+        when (color) {
+            is SystemBarsColor.Both -> {
+                LifecycleEventEffect(Lifecycle.Event.ON_START) {
+                    insetsController.isAppearanceLightStatusBars = !color.statusDarkIcons
+                    insetsController.isAppearanceLightNavigationBars = !color.navigationDarkIcons
+                }
+                LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+                    insetsController.isAppearanceLightStatusBars = wereStatusBarIconsDark
+                    insetsController.isAppearanceLightNavigationBars = wereNavigationBarIconsDark
+                }
+            }
 
-                    is SystemBarsColor.NavigationBar -> {
-                        if (color.darkIcons) {
-                            it.enableEdgeToEdge(
-                                navigationBarStyle = SystemBarStyle.light(
-                                    scrim = Color.TRANSPARENT,
-                                    darkScrim = Color.TRANSPARENT
-                                )
-                            )
-                        } else {
-                            it.enableEdgeToEdge(navigationBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT))
-                        }
-                    }
+            is SystemBarsColor.NavigationBar -> {
+                LifecycleEventEffect(Lifecycle.Event.ON_START) {
+                    insetsController.isAppearanceLightNavigationBars = !color.darkIcons
+                }
+                LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+                    insetsController.isAppearanceLightNavigationBars = wereNavigationBarIconsDark
+                }
+            }
 
-                    is SystemBarsColor.StatusBar -> {
-                        if (color.darkIcons) {
-                            it.enableEdgeToEdge(
-                                statusBarStyle = SystemBarStyle.light(
-                                    scrim = Color.TRANSPARENT,
-                                    darkScrim = Color.TRANSPARENT
-                                )
-                            )
-                        } else {
-                            it.enableEdgeToEdge(statusBarStyle = SystemBarStyle.dark(scrim = Color.TRANSPARENT))
-                        }
-                    }
+            is SystemBarsColor.StatusBar -> {
+                LifecycleEventEffect(Lifecycle.Event.ON_START) {
+                    insetsController.isAppearanceLightStatusBars = !color.darkIcons
+                }
+                LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
+                    insetsController.isAppearanceLightStatusBars = wereStatusBarIconsDark
                 }
             }
         }
