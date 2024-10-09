@@ -49,6 +49,12 @@ android {
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
     kotlinOptions.freeCompilerArgs = listOf("-Xcontext-receivers")
+    compilerOptions {
+        freeCompilerArgs.add(
+            // Enable experimental contracts APIs
+            "-opt-in=kotlin.contracts.ExperimentalContracts"
+        )
+    }
 }
 
 dependencies {
