@@ -6,23 +6,16 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest.Builder
-import android.os.Build.VERSION
-import android.os.Build.VERSION_CODES
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.core.content.getSystemService
-import com.mitch.template.di.Dispatcher
-import com.mitch.template.di.TemplateDispatcher.Io
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.flowOn
-import timber.log.Timber
-import javax.inject.Inject
 
 /**
  * Network monitoring for reporting app connectivity status
@@ -34,9 +27,9 @@ interface NetworkMonitor {
     val networkInfo: Flow<NetworkInfo>
 }
 
-class ConnectivityManagerNetworkMonitor @Inject constructor(
-    @ApplicationContext private val context: Context,
-    @Dispatcher(Io) private val ioDispatcher: CoroutineDispatcher
+class ConnectivityManagerNetworkMonitor(
+    private val context: Context,
+    ioDispatcher: CoroutineDispatcher
 ) : NetworkMonitor {
     override val networkInfo: Flow<NetworkInfo> = callbackFlow {
         val connectivityManager = context.getSystemService<ConnectivityManager>()
@@ -57,7 +50,6 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
                         isOnWifi = connectivityManager.isOnWifi()
                     )
                 )
-                Timber.d("onAvailable: $networks with ${connectivityManager.isOnWifi()}")
             }
 
             override fun onLost(network: Network) {
@@ -68,7 +60,6 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
                         isOnWifi = connectivityManager.isOnWifi()
                     )
                 )
-                Timber.d("onLost: $networks with ${connectivityManager.isOnWifi()}")
             }
 
             override fun onCapabilitiesChanged(
@@ -79,10 +70,9 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
                     NetworkInfo(
                         isOnline = networks.isNotEmpty(),
                         isOnWifi = networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
-                            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
                     )
                 )
-                Timber.d("onCapabilitiesChanged for network $network")
             }
         }
 
@@ -108,40 +98,24 @@ class ConnectivityManagerNetworkMonitor @Inject constructor(
         .flowOn(ioDispatcher)
         .conflate()
 
-    @Suppress("DEPRECATION")
-    private fun ConnectivityManager.isCurrentlyConnected() = when {
-        VERSION.SDK_INT >= VERSION_CODES.M ->
-            activeNetwork
-                ?.let(::getNetworkCapabilities)
-                ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    private fun ConnectivityManager.isCurrentlyConnected(): Boolean {
+        val isConnected = activeNetwork
+            ?.let(::getNetworkCapabilities)
+            ?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
 
-        else -> activeNetworkInfo?.isConnected
-    } ?: false
+        return isConnected ?: false
+    }
 
-    @Suppress("DEPRECATION")
-    private fun ConnectivityManager.isOnWifi() = when {
-        VERSION.SDK_INT >= VERSION_CODES.M -> {
-            val networkCapabilities = activeNetwork?.let(::getNetworkCapabilities)
+    private fun ConnectivityManager.isOnWifi(): Boolean {
+        val networkCapabilities = activeNetwork?.let(::getNetworkCapabilities)
 
-            when {
-                networkCapabilities == null -> false
+        return when {
+            networkCapabilities == null -> false
 
-                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
+            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ||
                     networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
 
-                else -> false
-            }
-        }
-
-        else -> {
-            when {
-                activeNetworkInfo == null -> false
-
-                activeNetworkInfo?.type == ConnectivityManager.TYPE_WIFI ||
-                    activeNetworkInfo?.type == ConnectivityManager.TYPE_ETHERNET -> true
-
-                else -> false
-            }
+            else -> false
         }
     }
 }
