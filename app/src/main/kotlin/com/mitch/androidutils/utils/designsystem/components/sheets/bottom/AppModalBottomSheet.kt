@@ -56,6 +56,7 @@ fun AppModalBottomSheet(
     foregroundColor: Color = MaterialTheme.colorScheme.onSurface,
     shadowElevation: Dp = 4.dp,
     dragHandleDetails: DragHandleDetails = DragHandleDetails.default(),
+    useScrim: Boolean = true,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val currentOnDismiss by rememberUpdatedState(onDismiss)
@@ -68,7 +69,9 @@ fun AppModalBottomSheet(
     }
 
     ModalBottomSheet(state = sheetState) {
-        Scrim()
+        if (useScrim) {
+            Scrim()
+        }
         Sheet(
             modifier = modifier
                 .shadow(shadowElevation, shape)
