@@ -24,8 +24,8 @@ import androidx.compose.ui.semantics.semantics
 import com.composables.core.Dialog
 import com.composables.core.DialogPanel
 import com.composables.core.DialogProperties
-import com.composables.core.Scrim
 import com.composables.core.rememberDialogState
+import com.mitch.androidutils.utils.designsystem.components.scrim.AppScrim
 import androidx.compose.material3.R as Material3R
 
 @Composable
@@ -54,7 +54,7 @@ fun ComposeUnstyledDialog(
 
     Dialog(state = state, properties = properties) {
         if (useScrim) {
-            Scrim()
+            AppScrim()
         }
         DialogPanel(
             modifier = modifier

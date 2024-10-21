@@ -40,12 +40,12 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.composables.core.DragIndication
 import com.composables.core.LocalModalWindow
 import com.composables.core.ModalBottomSheet
-import com.composables.core.Scrim
 import com.composables.core.Sheet
 import com.composables.core.SheetDetent
 import com.composables.core.rememberModalBottomSheetState
 import com.mitch.androidutils.ui.theme.isThemeLight
 import com.mitch.androidutils.utils.activity.findActivity
+import com.mitch.androidutils.utils.designsystem.components.scrim.AppScrim
 
 @Composable
 fun AppModalBottomSheet(
@@ -70,7 +70,7 @@ fun AppModalBottomSheet(
 
     ModalBottomSheet(state = sheetState) {
         if (useScrim) {
-            Scrim()
+            AppScrim()
         }
         Sheet(
             modifier = modifier
