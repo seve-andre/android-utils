@@ -10,19 +10,20 @@ import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import com.mitch.androidutils.R
 
 @Composable
 fun AppScrim(onClose: () -> Unit, modifier: Modifier = Modifier) {
-//    val strClose = stringResource(R.string.close)
-    val strClose = "Chiudi"
+    val a11Close = stringResource(id = R.string.close)
     Box(
         modifier = modifier
             .pointerInput(onClose) { detectTapGestures { onClose() } }
             .semantics(mergeDescendants = true) {
-                contentDescription = strClose
+                contentDescription = a11Close
                 onClick {
                     onClose()
                     true
