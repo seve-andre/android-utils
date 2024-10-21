@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -23,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +34,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowInsetsControllerCompat
@@ -47,6 +53,8 @@ import com.composables.core.rememberModalBottomSheetState
 import com.mitch.androidutils.ui.theme.isThemeLight
 import com.mitch.androidutils.utils.activity.findActivity
 import com.mitch.androidutils.utils.designsystem.components.scrim.AppScrim
+import kotlinx.coroutines.launch
+import androidx.compose.material3.R as Material3R
 
 @Composable
 fun AppModalBottomSheet(
@@ -63,6 +71,15 @@ fun AppModalBottomSheet(
 ) {
     val currentOnDismiss by rememberUpdatedState(onDismiss)
     val sheetState = rememberModalBottomSheetState(initialDetent = SheetDetent.FullyExpanded)
+    val a11yBottomSheetTitle = stringResource(id = Material3R.string.m3c_bottom_sheet_pane_title)
+    val a11yDragHandleDescription =
+        stringResource(id = Material3R.string.m3c_bottom_sheet_drag_handle_description)
+    val scope = rememberCoroutineScope()
+    val animateToDismiss: () -> Unit = {
+        scope.launch {
+            sheetState.animateTo(SheetDetent.Hidden)
+        }
+    }
 
     LaunchedEffect(sheetState.currentDetent) {
         if (sheetState.currentDetent == SheetDetent.Hidden) {
@@ -87,6 +104,7 @@ fun AppModalBottomSheet(
                         .asPaddingValues()
                 )
                 .background(backgroundColor)
+                .semantics { paneTitle = a11yBottomSheetTitle }
         ) {
             Column(
                 modifier = Modifier
@@ -102,6 +120,7 @@ fun AppModalBottomSheet(
                         .background(dragHandleDetails.color, dragHandleDetails.shape)
                         .width(dragHandleDetails.width)
                         .height(dragHandleDetails.height)
+                        .semantics { contentDescription = a11yDragHandleDescription }
                 )
 
                 FixNavigationBar()
