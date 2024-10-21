@@ -89,4 +89,6 @@ dependencies {
 
     // for autofill textfield workaround
     implementation("com.google.android.material:material:1.12.0")
+
+    implementation("com.composables:core:1.17.1")
 }

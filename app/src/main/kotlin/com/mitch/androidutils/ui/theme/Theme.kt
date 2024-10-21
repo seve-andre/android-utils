@@ -68,3 +68,8 @@ fun AndroidUtilsTheme(
         content = content
     )
 }
+
+@Composable
+fun MaterialTheme.isThemeLight(): Boolean {
+    return this.colorScheme.background == LightColorScheme.background
+}
