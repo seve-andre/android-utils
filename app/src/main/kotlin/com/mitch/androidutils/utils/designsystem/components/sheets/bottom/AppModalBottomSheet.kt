@@ -40,6 +40,7 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.composables.core.DragIndication
 import com.composables.core.LocalModalWindow
 import com.composables.core.ModalBottomSheet
+import com.composables.core.ModalSheetProperties
 import com.composables.core.Sheet
 import com.composables.core.SheetDetent
 import com.composables.core.rememberModalBottomSheetState
@@ -51,6 +52,7 @@ import com.mitch.androidutils.utils.designsystem.components.scrim.AppScrim
 fun AppModalBottomSheet(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    properties: ModalSheetProperties = ModalSheetProperties(),
     shape: Shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
     foregroundColor: Color = MaterialTheme.colorScheme.onSurface,
@@ -68,7 +70,7 @@ fun AppModalBottomSheet(
         }
     }
 
-    ModalBottomSheet(state = sheetState) {
+    ModalBottomSheet(state = sheetState, properties = properties) {
         if (useScrim) {
             AppScrim(onClose = animateToDismiss, modifier = Modifier.fillMaxSize())
         }
