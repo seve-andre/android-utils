@@ -52,11 +52,6 @@ fun AppFullScreenDialog(
                 window,
                 window.decorView
             ).isAppearanceLightStatusBars = isThemeLight
-
-            WindowInsetsControllerCompat(
-                window,
-                window.decorView
-            ).isAppearanceLightNavigationBars = isThemeLight
         }
 
         content()
