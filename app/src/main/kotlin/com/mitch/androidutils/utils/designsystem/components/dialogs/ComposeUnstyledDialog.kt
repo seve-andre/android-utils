@@ -7,6 +7,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -54,7 +55,7 @@ fun ComposeUnstyledDialog(
 
     Dialog(state = state, properties = properties) {
         if (useScrim) {
-            AppScrim()
+            AppScrim(onClose = { state.visible = false }, modifier = Modifier.fillMaxSize())
         }
         DialogPanel(
             modifier = modifier

@@ -70,7 +70,7 @@ fun AppModalBottomSheet(
 
     ModalBottomSheet(state = sheetState) {
         if (useScrim) {
-            AppScrim()
+            AppScrim(onClose = animateToDismiss, modifier = Modifier.fillMaxSize())
         }
         Sheet(
             modifier = modifier
