@@ -18,7 +18,7 @@ data class DragHandleDetails(
         @Composable
         fun default(): DragHandleDetails {
             return DragHandleDetails(
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
                 shape = RoundedCornerShape(100),
                 width = 32.dp,
                 height = 4.dp
