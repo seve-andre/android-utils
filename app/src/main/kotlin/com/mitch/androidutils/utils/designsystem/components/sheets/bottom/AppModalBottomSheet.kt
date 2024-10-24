@@ -32,27 +32,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.view.WindowInsetsControllerCompat
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LifecycleEventEffect
 import com.composables.core.DragIndication
-import com.composables.core.LocalModalWindow
 import com.composables.core.ModalBottomSheet
 import com.composables.core.ModalSheetProperties
 import com.composables.core.Sheet
 import com.composables.core.SheetDetent
 import com.composables.core.rememberModalBottomSheetState
-import com.mitch.androidutils.ui.theme.isThemeLight
-import com.mitch.androidutils.utils.activity.findActivity
 import com.mitch.androidutils.utils.designsystem.components.scrim.AppScrim
+import com.mitch.androidutils.utils.designsystem.util.ComposeUnstyledSystemBarsFix
 import kotlinx.coroutines.launch
 import androidx.compose.material3.R as Material3R
 
@@ -123,36 +116,11 @@ fun AppModalBottomSheet(
                         .semantics { contentDescription = a11yDragHandleDescription }
                 )
 
-                FixNavigationBar()
+                ComposeUnstyledSystemBarsFix()
                 CompositionLocalProvider(LocalContentColor provides foregroundColor) {
                     content()
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun FixNavigationBar() {
-    // Activity
-    val view = LocalView.current
-    val activityWindow = view.context.findActivity()?.window ?: return
-    val activityInsetsController = WindowInsetsControllerCompat(activityWindow, view)
-
-    // BottomSheet
-    val modalWindow = LocalModalWindow.current
-    val modalInsetsController = WindowInsetsControllerCompat(modalWindow, view)
-    val wereNavigationBarIconsDark = modalInsetsController.isAppearanceLightStatusBars
-
-    if (!view.isInEditMode) {
-        val isThemeLight = MaterialTheme.isThemeLight()
-
-        LifecycleEventEffect(Lifecycle.Event.ON_START) {
-            modalWindow.navigationBarColor = Color.Transparent.toArgb()
-            modalInsetsController.isAppearanceLightNavigationBars = isThemeLight
-        }
-        LifecycleEventEffect(Lifecycle.Event.ON_STOP) {
-            activityInsetsController.isAppearanceLightNavigationBars = wereNavigationBarIconsDark
         }
     }
 }

@@ -9,15 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
-import androidx.core.view.WindowInsetsControllerCompat
 import com.composables.core.DialogProperties
-import com.composables.core.LocalModalWindow
-import com.mitch.androidutils.ui.theme.isThemeLight
+import com.mitch.androidutils.utils.designsystem.util.ComposeUnstyledSystemBarsFix
 
 @Composable
 fun AppFullScreenDialog(
@@ -45,15 +42,7 @@ fun AppFullScreenDialog(
         enterTransition = enterTransition,
         exitTransition = exitTransition
     ) {
-        val isThemeLight = MaterialTheme.isThemeLight()
-        val window = LocalModalWindow.current
-        LaunchedEffect(Unit) {
-            WindowInsetsControllerCompat(
-                window,
-                window.decorView
-            ).isAppearanceLightStatusBars = isThemeLight
-        }
-
+        ComposeUnstyledSystemBarsFix()
         content()
     }
 }
