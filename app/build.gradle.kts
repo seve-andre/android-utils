@@ -60,6 +60,7 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.0-RC.2")
     implementation(libs.androidx.lifecycle.runtime.compose.android)
+    implementation(libs.androidx.foundation.layout.android)
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 
     implementation(libs.androidx.core.ktx)
