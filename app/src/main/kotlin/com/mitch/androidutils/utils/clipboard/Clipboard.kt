@@ -18,16 +18,16 @@ fun rememberClipboardText(): State<AnnotatedString?> {
     val text = rememberSaveable { mutableStateOf(clipboardManager.getText()) }
 
     val clipboardManagerService =
-        LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        LocalContext.current.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
     val callback = remember {
         ClipboardManager.OnPrimaryClipChangedListener {
             text.value = clipboardManager.getText()
         }
     }
     DisposableEffect(clipboardManagerService) {
-        clipboardManagerService.addPrimaryClipChangedListener(callback)
+        clipboardManagerService?.addPrimaryClipChangedListener(callback)
         onDispose {
-            clipboardManagerService.removePrimaryClipChangedListener(callback)
+            clipboardManagerService?.removePrimaryClipChangedListener(callback)
         }
     }
     return text
