@@ -69,9 +69,7 @@ class MainActivity : ComponentActivity() {
                         var isHttps by rememberSaveable { mutableStateOf(false) }
                         val clipboardText by rememberClipboardText()
                         DisposableEffect(clipboardText) {
-                            if (clipboardText?.startsWith("https") == true) {
-                                isHttps = true
-                            }
+                            isHttps = clipboardText?.startsWith("https") == true
                             onDispose { }
                         }
 
