@@ -21,7 +21,7 @@ fun AppScrim(onClose: () -> Unit, modifier: Modifier = Modifier) {
     val a11Close = stringResource(id = R.string.close)
     Box(
         modifier = modifier
-            .pointerInput(onClose) { detectTapGestures { onClose() } }
+            .pointerInput(onClose) { detectTapGestures(onTap = { onClose() }) }
             .semantics(mergeDescendants = true) {
                 contentDescription = a11Close
                 onClick {
