@@ -7,7 +7,9 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.consumeWindowInsets
@@ -26,8 +28,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import com.mitch.androidutils.ui.theme.AndroidUtilsTheme
-import com.mitch.androidutils.utils.designsystem.components.sheets.bottom.AppModalBottomSheet
+import com.mitch.androidutils.utils.clipboard.rememberClipboardText
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,18 +65,30 @@ class MainActivity : ComponentActivity() {
                                 WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)
                             )
                     ) {
-                        Button(
-                            onClick = { showDialog = true },
-                            modifier = Modifier.align(Alignment.Center)
-                        ) {
-                            Text("Show")
-                        }
-                        if (showDialog) {
-                            AppModalBottomSheet(onDismiss = { showDialog = false }) {
-                                Button(onClick = { showDialog = false }) {
-                                    Text("Chiudi")
-                                }
+                        val clipboardManager = LocalClipboardManager.current
+                        var isHttps by rememberSaveable { mutableStateOf(false) }
+                        val clipboardText by rememberClipboardText()
+                        DisposableEffect(clipboardText) {
+                            if (clipboardText?.startsWith("https") == true) {
+                                isHttps = true
                             }
+                            onDispose { }
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(text = clipboardText ?: AnnotatedString(""))
+                            Button(
+                                onClick = {
+                                    clipboardManager.setText(AnnotatedString("https://www.google.com"))
+                                }
+                            ) {
+                                Text(text = "Copy text")
+                            }
+                            Text(text = "$isHttps")
                         }
                     }
                 }
